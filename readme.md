@@ -77,53 +77,42 @@ Your manager tasks you with generating a report of *existing* active interfaces 
 In the the example below, tThe goal is to scan three Cisco Catalyst switches: Two Catalyst 9300 Series Switches, and one Catalyst 9400 Series Switch. 
 
 ```
-+---------------------------------------------+
-Geting DNA Auth Token ...
-Your token is [shown here]
-+---------------------------------------------+
-Searching DNA Center Inventory for the following switches: ['switch1', 'switch2', 'switch3']...
-Detailed interface output stored in flash memory
-+---------------------------------------------+
-Creating .CSV Template...
-Generating detailed report for each switch..
-+---------------------------------------------+
-+--------------------------------------+-----------------+-----------------+-----------------+----------------+------------------+-------------+
-|       Switch Name      |   Switch Model  | UP Access Ports | UP Module Ports | Total UP Ports | Total DOWN Ports | Total Ports |
-+--------------------------------------+-----------------+-----------------+-----------------+----------------+------------------+-------------+
-|         switch1        |      C9410R     |        3        |        1        |       4        |        54        |      58     |
-|         switch2        | C9300L-48UXG-4X |        3        |        0        |       3        |        49        |      52     |
-|         switch3        | C9300L-48UXG-4X |        3        |        0        |       3        |        49        |      52     |
-+--------------------------------------+-----------------+-----------------+-----------------+----------------+------------------+-------------+
-+---------------------------------------------+
-Generating .CSV Report...
-CSV report created in working directory: port-report-06-02-21.csv
+$ python .\main.py
++------------------------------------------------------------+
+Auth Token:  eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MDJjMGUyODE0NzEwYTIyZDFmN2UxNzIiLCJhdXRoU291cmNlIjoiaW50ZXJuYWwiLCJ0ZW5hbnROYW1lIjoiVE5UMCIsInJvbGVzIjpbIjYwMmJlYmU1MTQ3MTBhMDBjOThmYTQwOSJdLCJ0ZW5hbnRJZCI6IjYwMmJlYmU1MTQ3MTBhMDBjOThmYTQwMiIsImV4cCI6MTYyMzg5NjAwNCwiaWF0IjoxNjIzODkyNDA0LCJqdGkiOiI5MDRjOWNiNi0xZWQzLTQzZDYtYTM5YS1mZTQ3OGU2ZGExOTUiLCJ1c2VybmFtZSI6ImRldm5ldHVzZXIifQ.jPvAA2WGWUVtD3z8g97StSwvkThMxR3uWA0HjIr2CLF1F0cd4eto522lVRuDcNl7xlJYnE0kX-0FxzirLJQi33QdDlOp9ZvLaRdtHv3jmnOw_vpJTKA1It93Kz2ANxqS4KhjJKUR25rw5LgibKmAOC22MnZZXZuw3-CtKpRK1fJN4ooBaome7Ix-ZsOuVcV6HTjGZHd1Qb0IuRK7BoyYYGkouMF1ne7lbbBd8SlcBLzJdC-yt0FRGcdrgf7Kfpunw6ZMyNlVsVTcUQr9tsWo_yxkO4bXsZ61jaA4p5efc2J3GP3VJlJKWHgHVXSU4fabp99Tilg3JKos53s7FFJuiA
++------------------------------------------------------------+
+Gathering Device Info ...
++------------------------------------------------------------+
+Device Hostname: asr1001-x.abc.inc 
+Executing Command on 6aad2ec7-d1d0-4605-bf32-f62266c5f53e
+Archiving Running Configuration ... 
++------------------------------------------------------------+
+Device Hostname: cs3850.abc.inc
+Executing Command on 5d6dd65b-eb43-4e28-bd31-e6b0730b2ac5
+Archiving Running Configuration ... 
++------------------------------------------------------------+
+Folder named 06-16-21 created in <built-in function getcwd>.
+ Running configuration for the following devices have been archived:
+
+1 asr1001-x.abc.inc
+2 cs3850.abc.inc
+
++------------------------------------------------------------+
 ```
 
 # FAQ 
 1. What is the purpose of each file?
-    - [config.py](config.py) - Contains DNA Center info and API calls, as strings.
+    - [.env](.env) - Contains DNA Center info, including DNA Center FQDN, username and password.
     - [main.py](main.py) - Primary code. This is the file you execute to run this code. 
 
-2. Does this code use NETCONF, RESTCONF, or both?
-
-    - This code leverages **RESTCONF** APIs and **YANG** data models only. **NETCONF** is not used.
-
-3. How do I enable RESTCONF on my Catalyst switches?
-    - These API calls are not sent directly to your Catalyst switches. Instead, each API GET request is sent to the DNA Center controller only. 
-    -  DNA Center is the central management server for all of these switches, and it already has the interface information we need!
-
-4. How do I properly modify [config.py](config.py) with the appropriate information? 
-
-
-- **DNA_FQDN ** = **IP address** or **FQDN** of your DNA Center's Enterprise VIP**
-- **DNA_PORT** = Port used for **RESTCONF** API calls on DNA. Default is **443**
-- **DNA_USER** =  **Username** with **SUPER-ADMIN-ROLE** permissons on your DNA Center controller.
-- **DNA_PASS** = **Password** of your **Username** with **SUPER-ADMIN-ROLE** permissons on your DNA Center controller.
-- **DNA_SWITCHES** = A comma-seperated list of Catalyst switch **hostnames** *that you want to include in your report.
-    - This variable is a Python list, and each **hostname** is a string. 
-    - For example, if you want a report on three switches - named switch1, switch2 and switch3 - the **DNA_SWITCHES** variable would be equal to *["switch1", "switch2", "switch3"]*
-
-*NOTE: Do not modify any of the API calls below the line **# DNA API Calls*** in [config.py](config.py)
+2. How do I properly modify [.env](.env) with the appropriate information? 
+    - **DNA_CENTER_BASE_URL** = **IP address** or **FQDN** of your DNA Center's Enterprise VIP**
+    - **DNA_CENTER_USERNAME** =  **Username** with **SUPER-ADMIN-ROLE** permissons on your DNA Center controller.
+    - **DNA_CENTER_PASSWORD** = **Password** of your **Username** with **SUPER-ADMIN-ROLE** permissons on your DNA Center controller.
+    - **DNA_CENTER_VERSION** = The version of DNA Center you are currently using. Needed for the dnacentersdk. If you're unsure, leave this at **2.1.1**
+    - **DNA_CENTER_DEBUG** =  Do not modify. Leave this set to **False**
+    - **DNA_CENTER_SINGLE_REQUEST_TIMEOUT=** = Do not modify. Leave this set to **60**. 
+    - **DNA_CENTER_WAIT_ON_RATE_LIMIT** = Do not modify. Leave this set to **True**. 
 
 # Authors
 Please contact me with questions or comments.

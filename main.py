@@ -10,6 +10,9 @@ todays_date = today.strftime("%m-%d-%y") # Set  data and time format
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning) # Silence the insecure warning due to SSL Certificate
 
+def spacer():
+    print("+"+"-"*60+"+")
+
 def get_device_list():
     devices = dnac.devices.get_device_list()
     devicesuid = []
@@ -19,9 +22,11 @@ def get_device_list():
             devicesuid.append(device.id)
             devicesname.append(device.hostname)
     get_device_config_by_id(devicesuid, devicesname)
+    return devicesname
 
 def get_device_config_by_id(device_list, name_list):
     for device, hostname in zip(device_list, name_list):
+        spacer()
         print("Device Hostname: {} ".format(hostname))
         print("Executing Command on {}".format(device))
         get_conf = dnac.devices.get_device_config_by_id(network_device_id=device).response
@@ -31,7 +36,13 @@ def get_device_config_by_id(device_list, name_list):
             os.makedirs(cwd)
         with open(filepath, 'w') as file:
             file.write(get_conf)
-        print("Archiving Running Configuration ... \n")
+        print("Archiving Running Configuration ... ")
+
+    devices = ("\n".join('%01d %s' % (i, s) for i, s in enumerate(name_list, 1)))
+    spacer()
+    print("Folder named {} created in {}. \nRunning configuration for the following devices have been archived: \n\n{}\n".format(todays_date, os.getcwd(), devices))
+    spacer()
+
 
 if __name__ == '__main__':
     load_dotenv()
@@ -41,6 +52,8 @@ if __name__ == '__main__':
     version = os.getenv("DNA_CENTER_VERSION")
     dnac = DNACenterAPI(username=username, password=password, base_url=base_url, version=version, verify=False)
 
+    spacer()
     print("Auth Token: ", dnac.access_token)
-    print("Gathering Device Info ... \n")
+    spacer()
+    print("Gathering Device Info ... ")
     get_device_list()
