@@ -67,14 +67,11 @@ python main.py
 
 # Tutorial
 
-Imagine you have a building on your Campus LAN which the business plans to expand with new users, new cubicles, new Access Points, etc. 
+Run this code to quickly download the running-configuration of every device in your DNA Center inventory (except access points)
 
-Your manager tasks you with generating a report of *existing* active interfaces on the *existing* switches in the building, to better understand how many new switches are required.
-    - The generated report will detail how many *access* ports are used, how many *module* (or, *uplink*) interfaces are used, and how many interfaces are currently available.
-    - You will be presented with a PrettyTable in your Bash or PowerShell terminal with this report
-    - A.CSV file will be generated with this report, and can be shared with management. 
+The .env file included with this code will query the always-on DNA Center sandbox environment @ https://sandboxdnac.cisco.com:443.
 
-In the the example below, tThe goal is to scan three Cisco Catalyst switches: Two Catalyst 9300 Series Switches, and one Catalyst 9400 Series Switch. 
+The output below is from the always-on DNA Center sandbox. 
 
 ```
 $ python .\main.py
